@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block extra_title %}Your profile{% endblock%}
+
+{% block content %}
+
+    <div id="core">
+
+        <div class="content">
+
+            <div class="section">
+
+                <h2>My profile</h2>
+
+                <table class="table-profile">
+                    <form method="POST">
+ 
+                        <input type="hidden" name="user" value="{{ user.id }}"/>
+
+                        <tr>
+                            <th>Identifier</th>
+                            <td>
+                                {{ profile.email }}
+                                <p id="form-1">
+                                    <label for="id_email">Your new identifier</label>
+                                    {{ form.email }}
+                                    <button type="submit" class="button">OK</button>
+                                </p>
+                            </td>
+                            <td class="txtR"><a href="#form-1" class="picto edit-link">Edit this</a></td>
+                        </tr>
+ 
+                        <tr>
+                            <th>Password</th>
+                            <td>
+                                ●●●●●●●●●
+                                <p id="form-2">
+                                    <label for="id_password">Your new password</label>
+                                    {{ form.password }}
+                                    <button type="submit" class="button">OK</button>
+                                </p>
+                            </td>
+                            <td class="txtR"><a href="#form-2" class="picto edit-link">Edit this</a></td>
+                        </tr>
+ 
+                        <tr>
+                            <th>First name</th>
+                            <td>
+                                {% if profile.user.first_name %}
+                                    {{ profile.user.first_name }}
+                                {% else %}
+                                    <em>Nothing to see here.</em>
+                                {% endif %}
+                                <p id="form-3">
+                                    <label for="id_email">Your first name</label>
+                                    {{ form.first_name }}
+                                    <button type="submit" class="button">OK</button>
+                                </p>
+                            </td>
+                            <td class="txtR"><a href="#form-3" class="picto edit-link">Edit this</a></td>
+                        </tr>
+
+                        <tr>
+                            <th>Last name</th>
+                            <td>
+                                {% if profile.user.last_name %}
+                                    {{ profile.user.last_name }}
+                                {% else %}
+                                    <em>Nothing to see here.</em>
+                                {% endif %}
+                                <p id="form-4">
+                                    <label for="id_email">Your last name</label>
+                                    {{ form.last_name }}
+                                    <button type="submit" class="button">OK</button>
+                                </p>
+                            </td>
+                            <td class="txtR"><a href="#form-4" class="picto edit-link">Edit this</a></td>
+                        </tr>
+
+                        <tr>
+                            <th>About me</th>
+                            <td>
+                                <p class="description">
+                                    {% if profile.about %}
+                                        {{ profile.about }}
+                                    {% else %}
+                                        <em>Nothing to see here.</em>
+                                    {% endif %}
+                                </p>
+                                <p id="form-5">
+                                    <label for="id_about">Your new description</label>
+                                    {{ form.about }}
+                                    <button type="submit" class="button">OK</button>
+                                </p>
+                            </td>
+                            <td class="txtR"><a href="#form-5" class="picto edit-link">Edit this</a></td>
+                        </tr>
+
+                        {% csrf_token %}
+ 
+                    </form>
+                </table>
+
+            </div><!-- /section -->
+
+        </div><!-- /content -->
+
+    </div><!-- /core -->
+
+{% endblock %}

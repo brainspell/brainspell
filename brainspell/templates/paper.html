@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+
+{% load comments %}
+
+{% block extra_title %}Tag this paper!{% endblock%}
+
+{% block content %}
+
+    <div id="core">
+
+        <div class="content">
+
+            <div class="section">
+
+                <h2 class="paper-title">{{ paper.title }}</h2>
+
+                <div class="infos clearfix">
+
+                    <div class="fl">
+                        <p class="half-max"><strong>{{ paper.authors }}</strong> {{ paper.source }}</p>
+                    </div>
+
+                    <div class="fr">
+                        {% if paper.pubmed_id %}<p class="half-max"><a href="{{ paper.pubmed_url }}">View in PubMed</a></p>{% endif %}
+                        {% if paper.neurosynth_url %}<p class="half-max"><a href="{{ paper.neurosynth_url }}">View in Neurosynth</a></p>{% endif %}
+                        <p class="fr"><a href="{% url export %}?id={{ paper.id }}" class="picto download">Download metadata</a></p>
+                    </div>
+
+                </div><!-- /infos -->
+
+                <p class="abstract">{{ paper.abstract }}</p>
+
+            </div><!-- /section -->
+
+            {% for experiment in paper.experiments.all %}
+                {% if experiment.locations.count > 0 %}
+
+                <div id="exp-{{ experiment.id }}" class="experiment section clearfix">
+
+                    <div class="experiment-info">
+
+                        <h3>
+                            <span>Experiment {{ forloop.counter }}:</span>
+                            <strong>{{ experiment.title }}</strong>
+                        </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">x</th>
+                                    <th scope="col">y</th>
+                                    <th scope="col">z</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for location in experiment.locations.all %}
+
+                                <tr>
+                                    <td>{{ location.x }}</td>
+                                    <td>{{ location.y }}</td>
+                                    <td>{{ location.z }}</td>
+                                </tr>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div><!-- /experiment-info -->
+
+                    <div class="experiment-tagging">
+
+                        <h3 class="clearfix">
+                            <span class="fl"><strong>Task and baseline</strong></span>
+                            <!-- <a href="#task-list" class="JS_collapse collapse-link fr" title="hide list">-</a> -->
+                        </h3>
+
+                        <ul id="task-list-{{ experiment.id }}" class="tag-list_2 task-list">
+
+                            {% for tag in experiment.level1_tasks.all %}
+
+                                <li class="item" id="tag-{{ tag.id }}" data-tagid="{{ tag.id }}">
+                                    <div class="tag task clearfix" tabindex="0">
+                                        <span>{{ tag.label }}</span><!--
+                                     --><ul class="rate">
+                                            <li>
+                                                <a class="like" title="approve this tag">
+                                                    <img src="{{ STATIC_URL }}site/img/pc_like.png" alt="like" height="14" width="12">
+                                                    <span id="likes-{{ tag.id }}">{{ tag.num_likes }}</span>
+                                                </a>
+                                            </li><!--
+                                         --><li>
+                                                <a class="hate" title="disapprove this tag">
+                                                    <img src="{{ STATIC_URL }}site/img/pc_hate.png" alt="dislike" height="14" width="12">
+                                                    <span id="dislikes-{{ tag.id }}">{{ tag.num_dislikes }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="now-loading"></span>
+                                    <ul>
+
+                                        {% for sub_tag in tag.contrast_tasks.all %}
+                                        {% if forloop.counter == 1 %}
+
+                                            <li class="item last-item" id="tag-{{ sub_tag.id }}" data-tagid="{{ sub_tag.id }}">
+                                                <div class="tag task clearfix" tabindex="0">
+                                                    <span>{{ sub_tag.label }}</span><!--
+                                                 --><ul class="rate">
+                                                        <li>
+                                                            <a class="like" title="approve this tag">
+                                                                <img src="{{ STATIC_URL }}site/img/pc_like.png" alt="like" height="14" width="12">
+                                                                <span id="likes-{{ sub_tag.id }}">{{ sub_tag.num_likes }}</span>
+                                                            </a>
+                                                        </li><!--
+                                                     --><li>
+                                                            <a class="hate" title="disapprove this tag">
+                                                                <img src="{{ STATIC_URL }}site/img/pc_hate.png" alt="dislike" height="14" width="12">
+                                                                <span id="dislikes-{{ sub_tag.id }}">{{ sub_tag.num_dislikes }}</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <span class="now-loading"></span>
+                                            </li>
+
+                                        {% endif %}
+                                        {% endfor %}
+
+                                        {% if tag.contrast_tasks.all.count == 0 %}
+
+                                        <li class="item last-item">
+<!--                                        
+                                            <a href="#form-subtask-{{ tag.id }}" title="add a contrast task" class="add-link">
+                                                <img src="{{ STATIC_URL }}site/img/pc_add-vs.png" alt="add" height="23" width="52">
+                                            </a>
+ -->
+                                             <form class="new-tag" id="form-subtask-{{ tag.id }}" method="POST">
+                                                <select name="label" id="new-subtask-{{ experiment.id }}" data-parent-id="{{ tag.id }}">
+                                                    {% for opt in tasks %}
+                                                        <option value="{{ opt.value }}">{{ opt.name }}</option>
+                                                    {% endfor %}
+                                                    <option value="other">Other, please specify below...</option>
+                                                </select>
+                                                <button type="submit" class="button">add!</button>
+                                                <a href="#form-subtask-{{ experiment.id }}" title="cancel" class="cancel">×</a>
+                                                <span class="now-loading"></span>
+
+                                                <input type="text" name="label_free" id="new-subtask-{{ experiment.id }}-free" class="new-tag-free">
+
+                                                <input type="hidden" name="action" value="add_task" />
+                                                <input type="hidden" name="experiment_id" value="{{ experiment.id }}" />
+                                                <input type="hidden" name="parent_id" value="{{ tag.id }}" />
+                                                {% csrf_token %}
+
+                                            </form>
+                                        </li>
+
+                                        {% endif %}
+
+                                    </ul>
+                                </li>
+
+                            {% endfor %}
+
+                            <li class="item last-item">
+ 
+<!--                            <a href="#form-task-{{ experiment.id }}" title="add a task" class="add-link">
+                                    <img src="{{ STATIC_URL }}site/img/pc_add.png" alt="add" height="23" width="21">
+                                </a>
+-->
+                                <form class="new-tag" id="form-task-{{ experiment.id }}" method="POST">
+                                    <select name="label" id="new-task-{{ experiment.id }}" data-parent-id="0">
+                                        {% for opt in tasks %}
+                                            <option value="{{ opt.value }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                        <option value="other">Other, please specify below...</option>
+                                    </select>
+                                    <button type="submit" class="button">add!</button>
+                                    <a href="#form-task-{{ experiment.id }}" title="cancel" class="cancel">×</a>
+                                    <span class="now-loading"></span>
+
+                                    <input type="text" name="label_free" id="new-task-{{ experiment.id }}-free" class="new-tag-free">
+
+                                    <input type="hidden" name="action" value="add_task" />
+                                    <input type="hidden" name="experiment_id" value="{{ experiment.id }}" />
+                                    <input type="hidden" name="parent_id" value="" />
+                                    {% csrf_token %}
+
+                                </form>
+                            </li>
+
+                        </ul>
+
+                        <h3 class="clearfix">
+                            <span class="fl"><strong>Cognitive Domains</strong></span>
+                            <!-- <a href="#cognitive-list" class="JS_collapse collapse-link fr" title="hide list">-</a> -->
+                        </h3>
+
+                        <ul id="cognitive-list-{{ experiment.id }}" class="tag-list_2 domain-list">
+
+                            {% for tag in experiment.level1_domains.all %}
+
+                                <li class="item" id="tag-{{ tag.id }}" data-tagid="{{ tag.id }}">
+                                    <div class="tag clearfix{% if tag.is_predefined %} cognitive-atlas{% endif %}" tabindex="0">
+                                        <span>{{ tag.label }}</span><!--
+                                     --><ul class="rate">
+                                            <li>
+                                                <a class="like" title="approve this tag">
+                                                    <img src="{{ STATIC_URL }}site/img/pc_like.png" alt="like" height="14" width="12">
+                                                    <span id="likes-{{ tag.id }}">{{ tag.num_likes }}</span>
+                                                </a>
+                                            </li><!--
+                                         --><li>
+                                                <a class="hate" title="disapprove this tag">
+                                                    <img src="{{ STATIC_URL }}site/img/pc_hate.png" alt="dislike" height="14" width="12">
+                                                    <span id="dislikes-{{ tag.id }}">{{ tag.num_dislikes }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+
+                            {% endfor %}
+
+                            <li class="item last-item">
+<!--
+                                <a href="#form-domain-{{ experiment.id }}" title="add a tag" class="add-link">
+                                    <img src="{{ STATIC_URL }}site/img/pc_add.png" alt="add" height="23" width="21">
+                                </a>
+ -->                                
+                                <form class="new-tag" id="form-domain-{{ experiment.id }}" action="#" method="POST">
+                                    <select name="label" id="new-domain-{{ experiment.id }}" data-parent-id="0">
+                                        {% for opt in domains %}
+                                            <option value="{{ opt.value }}">{{ opt.name }}</option>
+                                        {% endfor %}
+                                        <option value="other">Other, please specify below...</option>
+                                    </select>
+                                    <button type="submit" class="button">add!</button>
+                                    <a href="#form-domain-{{ experiment.id }}" title="cancel" class="cancel">×</a>
+                                    <span class="now-loading"></span>
+
+                                    <input type="text" name="label_free" id="new-domain-{{ experiment.id }}-free" class="new-tag-free">
+
+                                    <input type="hidden" name="action" value="add_domain" />
+                                    <input type="hidden" name="experiment_id" value="{{ experiment.id }}" />
+                                    <input type="hidden" name="parent_id" value="" />
+                                    {% csrf_token %}
+
+                                </form>
+                            </li>
+
+                        </ul>
+
+                    </div><!-- /experiment-tagging -->
+
+                </div><!-- /experiment -->
+
+                {% endif %}
+            {% endfor %}
+
+
+        </div><!-- /content -->
+
+        <div class="content-section second-one clearfix">
+
+            <div class="content">
+
+                {% get_comment_list for paper as comments %}
+
+                {% if comments %}
+
+                    <div class="section">
+                        <h2>Your comments about this experiment and its tagging</h2>
+                        <ul class="com-list">
+
+                            {% for comment in comments %}
+
+                            <li class="clearfix">
+                                <div class="author">
+                                    <cite>
+
+                                        {% if comment.user.first_name or comment.user.last_name %}
+                                            {{ comment.user.first_name }} {{ comment.user.last_name }}
+                                        {% else %}
+                                            {{ comment.user.email }}
+                                        {% endif %}
+
+                                    </cite>
+                                    <p>{{ comment.submit_date }}</p>
+                                </div>
+                                <blockquote>{{ comment.comment }}</blockquote>
+                            </li>
+
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+
+                {% endif %}
+
+                <div class="section">
+
+                    {% if user.is_authenticated %}
+
+                        {% get_comment_form for paper as form %}
+
+                        <h2><label for="id_comment">Join the discussion...</label></h2>
+
+                        <form method="POST" action="{% comment_form_target %}">
+                            <fieldset class="com-form clearfix">
+
+                                <div class="author">
+                                    <p>Logged as:<br><strong>
+
+                                        {% if user.first_name or user.last_name %}
+                                            {{ user.first_name }} {{ user.last_name }}
+                                        {% else %}
+                                            {{ user.email }}
+                                        {% endif %}
+
+                                    </strong></p>
+                                    <p><a href="{% url logout %}">Log out</a></p>
+                                </div>
+                                <div class="fr">
+                                    <textarea id="id_comment" name="comment" cols="30" rows="3"></textarea>
+                                    <p class="submit"><button type="submit" class="button">Send</button></p>
+                                </div>
+    
+                                <input type="hidden" name="next" value="{{ request.path }}" />
+                                <input type="hidden" name="name" value="{{ user.first_name }} {{ user.last_name }}" />
+                                <input type="hidden" name="email" value="{{ user.email }}" />
+                                <input type="hidden" name="content_type" value="papers.paper" />
+                                <input type="hidden" name="object_pk" value="{{ paper.id }}" />
+
+                                {{ form.timestamp }}
+                                {{ form.security_hash }}
+
+                                {% csrf_token %}
+
+                            </fieldset>
+                        </form>
+
+                    {% else %}
+
+                        <h2>Join the discussion...</h2>
+
+                        <div class="com-log">
+                            <p>To contribute, you have to be <a href="#quick-log-in">logged in</a>.</p>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div><!-- /content -->
+
+        </div><!-- /second-one -->
+
+    </div><!-- /core -->
+
+</div><!-- /content-section -->
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}site/js/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}site/js/paper.js"></script>
+    <script>
+        var is_auth = {% if user.is_authenticated %}true{% else %}false{% endif%};
+    </script> 
+{% endblock %}

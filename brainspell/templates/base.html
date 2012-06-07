@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<!--[if lt IE 7 ]> <html class="msie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="msie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="msie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="msie9" lang="en"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame. -->
+    
+    <title>BrainSpell › {% block extra_title %}page name{% endblock %}</title>
+    
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}site/img/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}site/img/apple-touch-icon.png">
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}site/css/base.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}site/css/extra.css">
+    
+    <script type="text/javascript">
+        // Is JS enabled? Is it a touch device?
+        var init = function(){
+            var htmlTag = document.getElementsByTagName('html')[0];
+            htmlTag.className = (htmlTag.className + ' ' || '') + 'hasJS';
+            if ('ontouchstart' in document.documentElement)
+                htmlTag.className = (htmlTag.className + ' ' || '') + 'isTouch';
+        }();
+    </script>
+
+    {% block extra_head %}{% endblock %}
+    
+</head>
+<body>
+
+    <div id="top-nav">
+        <div class="content clearfix">
+
+            {% if user.is_authenticated %}
+
+                <p>
+                    Welcome <strong>
+
+                    {% if user.first_name or user.last_name %}
+                        {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                        {{ user.email }}
+                    {% endif %}
+
+                    </strong>
+                </p>
+
+                <ul>
+                    <li><a href="{% url profile %}" class="ninja">My profile</a></li><!--
+                 --><li><a href="{% url logout %}?next={{ request.path }}" class="ninja picto log-out">Log out</a></li>
+                </ul>
+
+            {% else %}
+
+                <form action="{% url register %}" method="POST">
+                    <p id="quick-log-in">
+                        <input type="text" name="email" title="email@provider.ext">
+                        <input type="password" name="password" title="your password">
+                        <button type="submit" name="login" class="button button-1">Log in</button><!--
+                     --><span class="or">or</span><!--
+                     --><button type="submit" name="register" class="button button-2">Create an account with this!</button>
+                    </p>
+
+                    <input type="hidden" name="next" value="{{ request.path }}" />
+                    {% csrf_token %}
+
+                </form>
+
+            {% endif %}
+
+            <p class="download-p"><a class="picto download" href="{% url export %}">Download complete archive</a></p>
+
+        </div><!-- /content -->
+    </div><!-- /top-nav -->
+
+    <div class="content-section">
+        <div id="header">
+            <div class="content clearfix">
+
+                <a href="{% url homepage %}" class="ninja fl">
+                    <h1><img src="{{ STATIC_URL }}site/img/tt_brainspell.png" alt="Brainspell" width="365" height="92"></h1>
+                    <p id="baseline">Crowdsourced neuroimagery tagging</p>
+                </a>
+
+                <ul class="fr">
+                    <li><a href="{% url news %}" class="ninja">Latest News</a></li>
+                    <li><a href="{% url page slug='about' %}" class="ninja">About</a></li>
+                    <li><a href="{% url page slug='contact' %}" class="ninja">Contact</a></li>
+                </ul>
+
+            </div>
+        </div><!-- /header -->
+
+        {% block content %}{% endblock %}
+
+    </div><!-- /content-section -->
+
+    <div id="bottom-nav">
+        <div class="content clearfix">
+            <ul class="fl">
+                <li class="on"><a href="{% url homepage %}" class="ninja">Home</a></li><!--
+             --><li><a href="{% url news %}" class="ninja">Latest News</a></li><!--
+             --><li><a href="{% url page slug='about' %}" class="ninja">About</a></li><!--
+
+                {% if user.is_authenticated %}
+                 --><li class="profile"><a href="{% url profile %}" class="ninja">My profile</a></li><!--
+                {% endif %}
+
+             --><li><a href="{% url page slug='contact' %}" class="ninja">Contact</a></li>
+            </ul>
+
+            <p class="fr"><a href="#" class="picto download">Download complete archive</a></p>
+
+        </div><!-- /content -->
+    </div><!-- /bottom-nav -->
+
+    <div id="footer">
+
+        <div class="content clearfix">
+
+            <div class="fl">
+                <p class="credits"><strong>Copyleft BrainSpell 2012</strong> &mdash; Project led by <a href="#">Roberto Toro</a>.</p>
+                <p class="credits">Design and mark-up by <a href="http://www.stpo.fr">STPo</a>. Development by <a href="http://www.linkedin.com/in/mathieurichardoz">Mathieu Richardoz</a>.</p>
+                <p>Creative Commons and Open-source, this is the key!</p>
+            </div><!-- /fl -->
+
+            <div class="fr">
+                <ul>
+                    <li><a href="http://www.pasteur.fr"><img src="{{ STATIC_URL }}site/img/lg_institut-pasteur.png" alt="Institut Pasteur" height="32" width="83"></a></li>
+                    <li><a href="http://www.cnrs.fr"><img src="{{ STATIC_URL }}site/img/lg_cnrs.png" alt="CNRS" height="33" width="32"></a></li>
+                    <li><a href="http://www.cognitiveatlas.org"><img src="{{ STATIC_URL }}site/img/lg_cognitive-atlas.png" alt="Cognitive Atlas" height="33" width="95"></a></li>
+                    <li><a href="http://neurobureau.projects.nitrc.org"><img src="{{ STATIC_URL }}site/img/lg_neurobureau.png" alt="Neurobureau" height="33" width="57"></a></li>
+                    <li><a href="http://www.neurosynth.org"><img src="{{ STATIC_URL }}site/img/lg_neurosynth.png" alt="Neurosynth" height="33" width="78"></a></li>
+                </ul>
+            </div><!-- /fr -->
+
+        </div><!-- /content -->
+
+    </div><!-- /footer -->
+
+    <!-- START : scripts -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}site/js/base.js"></script>
+    {% block extra_js %}{% endblock %}
+    <!-- END : scripts -->
+
+    {% block extra_body %}{% endblock %}
+    
+</body>
+</html>

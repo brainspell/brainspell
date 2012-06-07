@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block extra_title %}Welcome!{% endblock%}
+
+{% block content %}
+
+    <div id="core">
+
+        <div class="content">
+
+            <div class="section">
+
+                <div class="clearfix">
+                    <h2>
+                        <strong>Help us</strong> tagging these articles.
+                        <strong>Select</strong> a document below to <strong>label it!</strong>
+                    </h2>
+                    <a href="{{ request.path }}" class="fr refresh-link"><span>Refresh the list!</span></a>
+                </div>
+
+                <ul class="paper-list">
+
+                    {% for paper in papers %}
+
+                    <li>
+                        <div class="paper-stuff">
+                            <h3><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h3>
+                            <p class="info">
+                                {% if paper.authors %}<strong>{{ paper.authors }}</strong>{% endif %}
+                                {% if paper.source %}{{ paper.source }}{% endif %}
+                            </p>
+                        </div>
+                        <a class="button" href="{{ paper.get_absolute_url }}">Please label me!</a>
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div><!-- /section -->
+
+        </div><!-- /content -->
+
+        <div class="content-section second-one clearfix">
+
+            <div class="content">
+
+                <form action="{% url search %}">
+                    <fieldset class="section" id="home-search">
+                        <h2><label for="search">Browse our database</label></h2>
+                        <input type="text" id="search" name="q" title="Title, author, publication, Pubmed ID…">
+                        <button><img src="{{ STATIC_URL }}site/img/bt_search.png" width="25" height="25" alt="Search" class="rollMe"></button>
+                    </fieldset>
+                </form>
+
+                <div class="section">
+                    <h2>Or select a tag</h2>
+                    <ul class="tag-list_1 clearfix">
+                        {% for label in labels %}
+                        <li class="tag"><a href="{% url search%}?t={{ label.name }}">{{ label.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div><!-- /content -->
+        
+        </div><!-- /content-section -->
+
+    </div><!-- /core -->
+
+{% endblock %}
+

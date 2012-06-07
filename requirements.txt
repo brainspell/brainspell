@@ -1,0 +1,14 @@
+Django==1.4
+MySQL-python==1.2.3
+PIL==1.1.7
+django-debug-toolbar==0.9.4
+-e git://github.com/liberation/django-extended-choices.git@b851736e86065c4e7ff6cae3c53f63ee8a3d44db#egg=django_extended_choices-dev
+django-extensions==0.8
+-e git://github.com/pinax/django-notification.git@f5b18fdf8f613f2a662f3dd8e9cf51d041ae6b8c#egg=django_notification-dev
+django-pagination==1.0.7
+django-registration==0.7
+ipython==0.12
+lxml==2.3.4
+virtualenv==1.6.4
+virtualenvwrapper==2.7.1
+wsgiref==0.1.2

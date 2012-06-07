@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block extra_title %}Search results{% endblock%}
+
+{% block content %}
+
+    <div id="core">
+        <div class="content">
+            <div id="search-results" class="section">
+
+                <div class="clearfix">
+                    <h2>Search results {% if query %}for “<strong>{{ query }}</strong>”{% endif %}</h2>
+                    <a href="{% url export %}?{{ request.META.QUERY_STRING }}" class="picto download fr">Download all these search results</a>
+                </div>
+
+
+                {% if query %}
+
+                <div class="table">
+                    <ul>
+
+                        <li>
+                            <h3>Tags corresponding</h3>
+                            {% if results.tags %}
+                            <ul class="tag-list_3">
+                                {% for tag in results.tags %}
+                                <li class="clearfix">
+                                    <div class="tag">
+                                        <a href="{% url search %}?t={{ tag.name }}">{{ tag.name }}</a>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                <em>None</em>
+                            {% endif %}
+                        </li>
+
+                        <li>
+                            <h3>Parutions corresponding</h3>
+                            {% if results.journals %}
+                            <ul>
+                                {% for journal in results.journals %}
+                                <li><a href="{% url search %}?j={{ journal }}">{{ journal }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                <em>None</em>
+                            {% endif %}
+                        </li>
+
+                        <li>
+                            <h3>Authors corresponding</h3>
+                            {% if results.authors %}
+                            <ul>
+                                {% for author in results.authors %}
+                                <li><a href="{% url search %}?a={{ author }}">{{ author }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                <em>None</em>
+                            {% endif %}
+                        </li>
+
+                    </ul>
+                </div>
+
+                <h2><span>Articles corresponding to the search “<strong>{{ query }}</strong>”</span></h2>
+                {% endif %}
+
+                <ul class="paper-list">
+                    {% if results.papers %}
+                        {% for paper in results.papers %}
+                        <li>
+                            <div class="paper-stuff">
+                                <h3><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h3>
+                                <p class="info">by <strong>{{ paper.authors }}</strong> in <strong>{{ paper.journal }}</strong> on <strong>{{ paper.date_published }}</strong></p>
+                            </div>
+                            <a class="button" href="{{ paper.get_absolute_url }}">Please label me!</a>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li><em>No results.</em></li>
+                   {% endif %}
+                </ul>
+
+            </div><!-- /section -->
+        </div><!-- /content -->
+    </div><!-- /content-section -->
+
+{% endblock %}

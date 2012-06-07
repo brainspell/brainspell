@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE workspace SYSTEM "http://www.brainmap.org/DTDs/Workspace-1.0.dtd">
+<workspace>
+
+{% for paper in papers %}
+    <paper>
+
+        <id>{{ paper.neurosynth_id }}</id>
+        <PubmedID>{{ paper.pubmed_id }}</PubmedID>
+        <authors>
+            {% for author in paper.authors_as_list %}
+            <author>{{ author}}</author>
+            {% endfor %}
+        </authors>
+        <year>{{ paper.year_published }}</year>
+        <journal>{{ paper.journal }}</journal>
+
+        {% for experiment in paper.experiments.all %}
+        <experiment>
+
+            {% for main_task in experiment.main_tasks.all %}
+            <task>
+                <main>
+                    <label>{{ main_task.name }}</label>
+
+                    {% if main_task.cognitive_atlas_id %}
+                        <taskID>{{ main_task.cognitive_atlas_id }}</taskID>
+                    {% else %}
+                        <freeTaskID>{{ main_task.id }}</freeTaskID>
+                    {% endif %}
+
+                    <likes>{{ main_task.num_likes }}</likes>
+                    <dislikes>{{ main_task.num_dislikes }}</dislikes>
+                </main>
+
+                {% for contrast_task in main_task.contrast_tasks.all %}
+                <contrast>
+                    <label>{{ contrast_task.name }}</label>
+
+                    {% if contrast_task.cognitive_atlas_id %}
+                        <taskID>{{ contrast_task.cognitive_atlas_id }}</taskID>
+                    {% else %}
+                        <freeTaskID>{{ contrast_task.id }}</freeTaskID>
+                    {% endif %}
+
+                    <likes>{{ contrast_task.num_likes }}</likes>
+                    <dislikes>{{ contrast_task.num_dislikes }}</dislikes>
+                </contrast>
+                {% endfor %}
+
+            </task>
+            {% endfor %}
+
+            {% for domain in experiment.domains.all %}
+            <cognitiveDomain>
+                <label>{{ domain.name }}</label>
+
+                {% if domain.cognitive_atlas_id %}
+                    <cognitiveDomainID>{{ domain.cognitive_atlas_id }}</cognitiveDomainID>
+                {% else %}
+                    <freeCognitiveDomainID>{{ domain.id }}</freeCognitiveDomainID>
+                {% endif %}
+
+                <likes>{{ domain.num_likes }}</likes>
+                <dislikes>{{ domain.num_dislikes }}</dislikes>
+            </cognitiveDomain>
+            {% endfor %}
+
+            {% for location in experiment.locations.all %}
+            <location>{{ location.x }},{{ location.y }},{{ location.z }}</location>
+            {% endfor %}
+
+        </experiment>
+        {% endfor %}
+
+    </paper>
+{% endfor %}
+
+</workspace>

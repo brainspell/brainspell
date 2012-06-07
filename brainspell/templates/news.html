@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load pagination_tags %}
+
+{% block extra_title %}Latest news{% endblock%}
+
+{% block content %}
+
+    <div id="core">
+        <div class="content">
+            <div class="section text-generic">
+
+                <h2>Latest news and updates</h2>
+
+                {% autopaginate news %}
+
+                <ul class="news-list">
+
+                    {% for article in news %}
+
+                    <li>
+                        <h3><span class="date">{{ article.date_created }}</span> {{ article.title }}</h3>
+                        <p>{{ article.text }}</p>
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                {% paginate %}
+
+            </div><!-- /section -->
+        </div><!-- /content -->
+    </div><!-- /core -->
+
+
+{% endblock %}

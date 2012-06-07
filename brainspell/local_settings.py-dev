@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMIN_USERNAME = 'admin'
+ADMINS = (
+    ('Mathieu Richardoz', 'mathieu@richardoz.eu'),
+)
+MANAGERS = ADMINS
+
+PROJECT_URL = 'http://dev.brainspell.net/'
+MEDIA_URL   = PROJECT_URL + 'media/'
+STATIC_URL  = PROJECT_URL + 'static/'
+
+DATABASES = {
+    'default': {
+        'ENGINE':   'django.db.backends.mysql',     # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME':     'brainspell',                   # Or path to database file if using sqlite3.
+        'USER':     'root',                         # Not used with sqlite3.
+        'PASSWORD': 'root',                         # Not used with sqlite3.
+        'HOST':     '/tmp/mysql.sock',              # Set to empty string for localhost. Not used with sqlite3.
+        'PORT':     '',                             # Set to empty string for default. Not used with sqlite3.
+    }
+}
